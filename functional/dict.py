@@ -2,7 +2,7 @@ from functools import reduce
 import operator
 from typing import Iterable, Optional
 
-__all__ = ['FunctionalDict']
+__all__ = ['FunctionalDict', 'dmap', 'dzip']
 
 
 def key_union(*ds) -> set:
@@ -64,3 +64,11 @@ class FunctionalDict(dict):
     def merge(cls, *ds: dict) -> 'FunctionalDict':
         return FunctionalDict((k, cls._merge_single(k, *ds))
                               for k in key_union(*ds))
+
+
+def dmap(func, *ds: dict, mapkeys: bool = True, mapvalues: bool = True) -> dict:
+    return FunctionalDict.map(func, *ds, mapkeys=mapkeys, mapvalues=mapvalues)
+
+
+def dzip(*ds: dict) -> dict:
+    return FunctionalDict.zip(*ds).dict
