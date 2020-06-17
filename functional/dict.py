@@ -2,7 +2,7 @@ from functools import reduce
 import operator
 from typing import Iterable, Optional
 
-__all__ = ['FunctionalDict', 'dmap', 'dzip']
+__all__ = ['FunctionalDict', 'dmap', 'dzip', 'merge_dicts', 'rmerge_dicts']
 
 
 def key_union(*ds) -> set:
@@ -44,9 +44,9 @@ class FunctionalDict(dict):
         if not mapkeys and not mapvalues:
             raise ValueError('The function must operate on either the keys or the values!')
         elif not mapkeys:
-            return cls.map(lambda k, *vs: (k, func(*vs)), *ds, mapkeys=True)
+            return cls.map(lambda k, *vs: (k, func(*vs)), *ds)
         elif not mapvalues:
-            return cls.map(lambda k, *vs: (func(k), *vs), *ds, mapkeys=True)
+            return cls.map(lambda k, *vs: (func(k), *vs), *ds)
         else:
             return FunctionalDict(func(k, *vs) for k, vs in cls.zip(*ds).items())
 
@@ -65,6 +65,28 @@ class FunctionalDict(dict):
         return FunctionalDict((k, cls._merge_single(k, *ds))
                               for k in key_union(*ds))
 
+    @classmethod
+    def _rmerge_single(cls, k, *ds: dict, path: tuple):
+        vs = [d[k] for d in ds if k in d]
+        if vs:
+            if all(isinstance(v, dict) for v in vs):
+                return cls._rmerge(*vs, path=path + (k,))
+            elif all(vs[0] == v for v in vs[1:]):
+                return vs[0]
+            else:
+                raise ValueError(f'Found mismatched values in path {path + (k,)}')
+        else:
+            raise ValueError(f'Tried to merge at the vacant path {path + (k,)}')
+
+    @classmethod
+    def _rmerge(cls, *ds: dict, path: tuple) -> 'FunctionalDict':
+        return FunctionalDict((k, cls._rmerge_single(k, *ds, path=path))
+                              for k in key_union(*ds))
+
+    @classmethod
+    def rmerge(cls, *ds: dict) -> 'FunctionalDict':
+        return cls._rmerge(*ds, path=())
+
 
 def dmap(func, *ds: dict, mapkeys: bool = True, mapvalues: bool = True) -> dict:
     return FunctionalDict.map(func, *ds, mapkeys=mapkeys, mapvalues=mapvalues)
@@ -72,3 +94,11 @@ def dmap(func, *ds: dict, mapkeys: bool = True, mapvalues: bool = True) -> dict:
 
 def dzip(*ds: dict) -> dict:
     return FunctionalDict.zip(*ds).dict
+
+
+def merge_dicts(*ds: dict) -> dict:
+    return FunctionalDict.merge(*ds).dict
+
+
+def rmerge_dicts(*ds: dict) -> dict:
+    return FunctionalDict.rmerge(*ds).dict
