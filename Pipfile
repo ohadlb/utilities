@@ -4,6 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+timeout-decorator = "*"
+tqdm = "*"
 
 [dev-packages]
 
