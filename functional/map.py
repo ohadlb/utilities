@@ -1,19 +1,13 @@
 from multiprocessing.pool import Pool
 from typing import Callable, Iterable, Optional, Tuple, TypeVar
 
+from .base import compose
+
 __all__ = ['dist_map', 'timeout_map', 'tqdm_map_func']
 
-R = TypeVar('R')
 S = TypeVar('S')
 T = TypeVar('T')
 TMap = Callable[[Callable[[S], T], Tuple[Iterable[S], ...]], Iterable[T]]
-
-
-def compose(f: Callable[[S], T], g: Callable[[R], S]) -> Callable[[R], T]:
-    def comp(*args, **kwargs):
-        return f(g(*args, **kwargs))
-
-    return comp
 
 
 def dist_map(nprocs: int, ordered: bool) -> TMap:
