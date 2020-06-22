@@ -1,6 +1,8 @@
+from typeguard.importhook import install_import_hook
 import unittest
 
-from ..functional.dict import FunctionalDict, dmap, dzip, merge_dicts, rmerge_dicts
+with install_import_hook('utilities.functional.dict'):
+    from ..functional.dict import FunctionalDict, dmap, dzip, merge_dicts, rmerge_dicts
 
 
 class FuncDictTest(unittest.TestCase):
@@ -13,14 +15,14 @@ class FuncDictTest(unittest.TestCase):
         self.assertEqual({'foo': 'hello',
                           'bar': 'world'},
                          fd.copy_subset(whitelist=('foo', 'bar', 'baz', 'fyon'),
-                                        blacklist=('baz', 'moo', 'nargle')).dict)
+                                        blacklist=('baz', 'moo', 'nargle')))
         self.assertEqual({'bar': 'world',
                           'moo': 'polly'},
-                         fd.only_keys({'bar', 'moo', 'fyon'}).dict)
+                         fd.only_keys({'bar', 'moo', 'fyon'}))
         self.assertEqual({'foo': 'hello',
                           'baz': 'spam',
                           'myon': 'ni'},
-                         fd.without_keys(['bar', 'moo', 'fyon']).dict)
+                         fd.without_keys(['bar', 'moo', 'fyon']))
 
     def test_map(self):
         d1 = {'foo': 7,

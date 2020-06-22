@@ -30,10 +30,6 @@ class FunctionalDict(dict):
     def without_keys(self, keys: Iterable) -> 'FunctionalDict':
         return self.copy_subset(blacklist=keys)
 
-    @property
-    def dict(self) -> dict:
-        return dict(self.items())
-
     @classmethod
     def zip(cls, *ds) -> 'FunctionalDict':
         return FunctionalDict((k, tuple(d[k] for d in ds))
@@ -93,12 +89,12 @@ def dmap(func, *ds: dict, mapkeys: bool = True, mapvalues: bool = True) -> dict:
 
 
 def dzip(*ds: dict) -> dict:
-    return FunctionalDict.zip(*ds).dict
+    return dict(FunctionalDict.zip(*ds))
 
 
 def merge_dicts(*ds: dict) -> dict:
-    return FunctionalDict.merge(*ds).dict
+    return dict(FunctionalDict.merge(*ds))
 
 
 def rmerge_dicts(*ds: dict) -> dict:
-    return FunctionalDict.rmerge(*ds).dict
+    return dict(FunctionalDict.rmerge(*ds))
