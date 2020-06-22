@@ -1,9 +1,11 @@
 from io import StringIO
 from time import sleep
+from typeguard.importhook import install_import_hook
 import unittest
 from unittest.mock import patch
 
-from ..timer import ExecutionTimer
+with install_import_hook('utilities.timer'):
+    from ..timer import ExecutionTimer
 
 DELAY = 0.5
 
