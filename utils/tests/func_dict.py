@@ -1,7 +1,7 @@
 from typeguard.importhook import install_import_hook
 import unittest
 
-with install_import_hook('utilities.functional.dict'):
+with install_import_hook('utils.functional.dict'):
     from ..functional.dict import FunctionalDict, dmap, dzip, merge_dicts, rmerge_dicts
 
 

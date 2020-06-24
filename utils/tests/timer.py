@@ -4,7 +4,7 @@ from typeguard.importhook import install_import_hook
 import unittest
 from unittest.mock import patch
 
-with install_import_hook('utilities.timer'):
+with install_import_hook('utils.timer'):
     from ..timer import ExecutionTimer
 
 DELAY = 0.5
